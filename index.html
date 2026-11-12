@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17191d">
+<title>A Little Wish for You</title>
+<style>
+:root{
+  --bg:#17191d; --panel:#202329; --panel2:#292e36;
+  --silver:#c3c6cb; --ivory:#f1f0eb; --muted:#a7abb2;
+  --navy:#263f70; --navy2:#496a9e; --line:rgba(220,225,235,.22);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; min-height:100vh; overflow-x:hidden; color:var(--ivory);
+  background:radial-gradient(ellipse at 50% 0%,#30343d 0%,#1b1e24 44%,#111317 100%);
+  font-family:Georgia,"Times New Roman",serif;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+#sparkles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.spark{position:absolute;width:3px;height:3px;border-radius:50%;background:#e5e8ef;opacity:.55;box-shadow:0 0 9px #dfe5f5;animation:twinkle 3s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:.9;transform:scale(1.4)}}
+.page{
+  display:none; position:relative; z-index:1; min-height:100svh; width:100%;
+  padding:28px 18px 40px; align-items:center; justify-content:center;
+  animation:pageIn .8s ease both;
+}
+.page.active{display:flex}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+.frame{
+  position:relative;width:min(760px,100%);min-height:min(720px,calc(100svh - 50px));
+  border:1px solid var(--line);border-radius:24px;padding:clamp(24px,5vw,54px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.012));
+  box-shadow:0 24px 80px rgba(0,0,0,.28);overflow:hidden;
+}
+.frame:before,.frame:after{content:"✧  ·  ❋  ·  ✦";position:absolute;color:#9da4b1;opacity:.6;letter-spacing:9px;font-size:14px}
+.frame:before{top:19px;left:22px}.frame:after{bottom:19px;right:22px;transform:rotate(180deg)}
+.eyebrow{font:11px/1.5 Arial,sans-serif;letter-spacing:4px;text-transform:uppercase;color:var(--silver);margin:0 0 16px}
+h1,h2{font-weight:400;line-height:1.12;margin:0 0 16px}
+h1{font-size:clamp(38px,8vw,68px)}
+h2{font-size:clamp(30px,6vw,46px)}
+p{font:15px/1.8 Arial,sans-serif;color:#c7c9ce;max-width:520px}
+.accent{color:#d9dce2;font-style:italic}
+.small-note{font:12px/1.7 Arial,sans-serif;color:var(--muted);max-width:440px}
+.btn{
+  border:1px solid rgba(220,225,235,.5);border-radius:999px;padding:13px 25px;
+  color:var(--ivory);background:rgba(255,255,255,.06);letter-spacing:1px;
+  font:12px Arial,sans-serif;text-transform:uppercase;transition:.25s;
+}
+.btn:hover{background:rgba(220,225,235,.16);transform:translateY(-2px);box-shadow:0 8px 25px #0005}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+.ornament{font-size:22px;letter-spacing:12px;color:#b9bec8;margin:0 0 22px}
+.corner{position:absolute;color:#9da4b1;opacity:.7;font-size:24px}
+.c1{top:55px;left:36px}.c2{top:80px;right:42px}.c3{bottom:65px;left:48px}.c4{bottom:65px;right:48px}
+input.pin{
+  width:190px;text-align:center;letter-spacing:9px;padding:13px 14px;border-radius:12px;
+  border:1px solid var(--line);background:#111419;color:white;outline:none;margin-top:12px;
+}
+.error{color:#e5a4a4;font:12px Arial,sans-serif;min-height:20px;margin-top:10px}
+.progress{position:fixed;z-index:4;top:13px;left:50%;transform:translateX(-50%);display:flex;gap:7px}
+.progress span{width:5px;height:5px;border-radius:50%;background:#777e89;opacity:.4}
+.progress span.on{background:#e1e4ea;opacity:1;box-shadow:0 0 8px #dfe5f5}
+.music{
+  position:fixed;z-index:5;right:16px;top:15px;border:1px solid var(--line);border-radius:99px;
+  background:#17191ddd;color:#e8e9ec;padding:9px 13px;font:11px Arial,sans-serif;letter-spacing:.5px
+}
+.music:before{content:"♫ ";font-size:14px}
+svg{max-width:100%;height:auto}
+.illustration{width:min(330px,78vw);margin:10px auto 18px;filter:drop-shadow(0 12px 24px #0006)}
+.cake-wrap{position:relative}
+.flame{transform-origin:50% 100%;animation:flicker .7s ease-in-out infinite alternate}
+@keyframes flicker{from{transform:scale(.9) rotate(-3deg)}to{transform:scale(1.08) rotate(3deg)}}
+.flame.out{opacity:0;transform:scale(.1);animation:none;transition:.4s}
+.flower-svg{width:min(370px,82vw);cursor:pointer;overflow:visible}
+.petal{transform-box:fill-box;transform-origin:center;transition:transform 1.2s cubic-bezier(.2,.8,.2,1),opacity 1s}
+
+.flower-svg:not(.bloomed) .petal {
+  transform: scale(.55);
+  opacity: .45;
+}
+
+.flower-svg.bloomed .petal {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.petal {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 1s ease, opacity 1s ease;
+}
+
+.particle{animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0);opacity:.35}50%{transform:translateY(-12px);opacity:1}}
+.envelope{width:min(320px,78vw);cursor:pointer;transition:transform .5s}
+.envelope:hover{transform:translateY(-5px)}
+.letter{
+  width:min(520px,100%);padding:26px 25px;text-align:left;border:1px solid #c4c8d0;
+  background:linear-gradient(135deg,#e9e7df,#d5d6d7);color:#292c32;border-radius:5px;
+  box-shadow:0 15px 45px #0007;line-height:1.9;font:14px/1.9 Georgia,serif;
+  animation:letterIn .8s ease both;
+}
+@keyframes letterIn{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:none}}
+.letter p{color:#34373d;font:14px/1.9 Georgia,serif}
+.secret{color:#bfc7d5;cursor:pointer;user-select:none}
+.secret:hover{color:white;text-shadow:0 0 10px white}
+.final-stars{font-size:28px;letter-spacing:13px;color:#d9dce4;margin:25px}
+.toast{
+ position:fixed;z-index:9;left:50%;bottom:24px;transform:translate(-50%,20px);
+ opacity:0;background:#292e36;border:1px solid var(--line);border-radius:14px;padding:12px 18px;
+ color:#f1f0eb;font:13px/1.5 Arial,sans-serif;transition:.3s;max-width:90%;text-align:center
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:520px){
+ .page{padding:22px 12px}.frame{min-height:calc(100svh - 44px);padding:45px 20px}
+ .frame:before,.frame:after{font-size:11px;letter-spacing:5px}
+ .corner{font-size:18px}.c1{left:22px}.c2{right:22px}
+}
+</style>
+</head>
+<body>
+<div id="sparkles"></div>
+<div class="progress hidden" id="progress" aria-label="Progress halaman">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+<button class="music" id="musicBtn" type="button">Putar musik</button>
+<!-- Ganti file ini dengan instrumental saxophone bebas lisensi milikmu -->
+<audio id="bgMusic" loop preload="none">
+  <source src="lo-fi.mp3" type="audio/mpeg">
+</audio>
+
+<!-- HALAMAN PIN -->
+<section class="page active" id="pinPage">
+ <div class="frame">
+  <span class="corner c1">✧</span><span class="corner c2">❋</span>
+  <p class="eyebrow">A little secret place</p>
+  <div class="ornament">✦ ❋ ✦</div>
+  <h1>Just for you<span class="accent">.</span></h1>
+  <p>Kartu ucapan buat kamu, dibaca yaaa</p>
+  <p class="small-note">Ketik pin nya</p>
+  <input class="pin" id="pinInput" inputmode="numeric" maxlength="6" placeholder="DDMMYY" aria-label="PIN tanggal ulang tahun">
+  <div class="error" id="pinError"></div>
+  <button class="btn" id="pinBtn">Buka</button>
+  <p class="small-note" style="margin-top:22px">✧</p>
+ </div>
+</section>
+
+<!-- HALAMAN 1: OPENING -->
+<section class="page" id="openingPage">
+ <div class="frame">
+  <span class="corner c1">✧</span><span class="corner c2">☾</span><span class="corner c3">❋</span><span class="corner c4">✦</span>
+  <p class="eyebrow">A little world made for you</p>
+  <div class="ornament">✧ ❋ ✧</div>
+  <h1>Happy<br><span class="accent">Birthday</span></h1>
+  <p>Untuk <strong id="recipientName">[Nama Panggilan]</strong>,<br>selamat datang di kartu ucapan sederhana ini</p>
+  <button class="btn" data-next="birthdayPage">Lanjut</button>
+  <p class="small-note" style="margin-top:25px">Coba pencet bintang kecil disamping teks ini, kalo bisa bakal muncul sesuatu <span class="secret" id="starSecret" title="Sentuh bintang ini">✦</span></p>
+ </div>
+</section>
+
+<!-- HALAMAN 2: KUE DAN LILIN -->
+<section class="page" id="birthdayPage">
+ <div class="frame">
+  <p class="eyebrow">A wish for your day</p>
+  <h2>Make a <span class="accent">Wish</span></h2>
+  <p>Coba tiup lilinnya, tapi sebelum itu coba kasih satu harapan terbaik buat kamu</p>
+  <div class="cake-wrap illustration">
+   <svg viewBox="0 0 320 260" role="img" aria-label="Ilustrasi kue ulang tahun dengan satu lilin">
+    <path d="M65 168 Q160 150 255 168 L245 218 Q160 239 75 218Z" fill="#343943" stroke="#c3c6cb" stroke-width="2"/>
+    <path d="M65 168 Q160 188 255 168" fill="none" stroke="#e4e5e8" stroke-width="2"/>
+    <path d="M80 145 Q95 130 110 145 T140 145 T170 145 T200 145 T230 145 L255 168 Q160 190 65 168Z" fill="#59616e" stroke="#c3c6cb" stroke-width="2"/>
+    <path d="M105 142 Q95 154 107 161 Q119 168 126 154 Q136 168 148 157 Q160 145 170 158 Q184 171 194 155 Q207 170 218 157 Q229 148 238 160" fill="none" stroke="#e8e7e3" stroke-width="4" stroke-linecap="round"/>
+    <path d="M154 143 L154 91 Q160 84 166 91 L166 143Z" fill="#e8e7e3" stroke="#9da4b1" stroke-width="2"/>
+    <path class="flame" id="flame" d="M160 86 C137 67 155 48 161 37 C178 58 180 73 160 86Z" fill="#d9dce2" stroke="#fff" stroke-width="1.5"/>
+    <path d="M160 88 Q151 78 160 65 Q169 78 160 88" fill="#8c9db9"/>
+    <circle cx="90" cy="187" r="4" fill="#c3c6cb"/><circle cx="230" cy="191" r="4" fill="#c3c6cb"/>
+    <path d="M80 219 Q160 237 240 219" stroke="#c3c6cb" fill="none" stroke-width="2"/>
+    <path d="M60 229 Q160 248 260 229" stroke="#c3c6cb" fill="none" stroke-width="2"/>
+    <path d="M45 231 Q160 256 275 231" stroke="#707987" fill="none" stroke-width="2"/>
+   </svg>
+  </div>
+  <p class="small-note" id="micStatus">Akses mikrofonnya aktifin dulu yaa, abis itu tiup pelan ke arah mikrofon buat padamin lilin</p>
+  <div class="btn-row">
+   <button class="btn" id="micBtn">Aktifkan mikrofon</button>
+   <button class="btn hidden" id="retryMic">Coba lagi</button>
+  </div>
+  <p class="small-note">Kalau diminta izin, pilih “Allow / Izinkan”</p>
+ </div>
+</section>
+
+<!-- HALAMAN 3: BUNGA NAVY -->
+<section class="page" id="flowerPage">
+ <div class="frame">
+  <span class="corner c1">✧</span><span class="corner c2">❋</span><span class="corner c3">☾</span><span class="corner c4">✦</span>
+  <p class="eyebrow">A little bloom for you</p>
+  <h2>Bloom for <span class="accent">You</span></h2>
+  <p>Semoga selalu ada hal baik dan indah yang datang dihidup kamu seindah bunga pas udah mekar</p>
+  <svg class="flower-svg illustration" id="flower" viewBox="0 0 360 330" role="button" tabindex="0" aria-label="Sentuh bunga agar mekar">
+   <defs>
+    <linearGradient id="bluePetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6682b0"/><stop offset=".55" stop-color="#304d7e"/><stop offset="1" stop-color="#172c50"/></linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#667b76"/><stop offset="1" stop-color="#263a38"/></linearGradient>
+   </defs>
+   <path d="M178 167 Q180 225 164 292" stroke="#9da4a2" stroke-width="4" fill="none"/>
+   <path d="M174 230 Q110 182 92 226 Q117 266 174 230Z" fill="url(#leaf)" stroke="#aeb7b7" stroke-width="1.5"/>
+   <path d="M171 259 Q224 202 259 235 Q238 278 171 259Z" fill="url(#leaf)" stroke="#aeb7b7" stroke-width="1.5"/>
+   <path d="M174 231 Q135 220 104 231 M174 259 Q214 242 250 240" stroke="#b9c3c0" fill="none" opacity=".7"/>
+   <g id="petals">
+ 
+<g id="petals">
+  <g transform="rotate(0 180 151)">
+    <ellipse class="petal" cx="180" cy="91" rx="31" ry="64"
+      fill="url(#bluePetal)" stroke="#9eafcf" stroke-width="1.5"/>
+  </g>
+
+  <g transform="rotate(72 180 151)">
+    <ellipse class="petal" cx="180" cy="91" rx="31" ry="64"
+      fill="url(#bluePetal)" stroke="#9eafcf" stroke-width="1.5"/>
+  </g>
+
+  <g transform="rotate(144 180 151)">
+    <ellipse class="petal" cx="180" cy="91" rx="31" ry="64"
+      fill="url(#bluePetal)" stroke="#9eafcf" stroke-width="1.5"/>
+  </g>
+
+  <g transform="rotate(216 180 151)">
+    <ellipse class="petal" cx="180" cy="91" rx="31" ry="64"
+      fill="url(#bluePetal)" stroke="#9eafcf" stroke-width="1.5"/>
+  </g>
+
+  <g transform="rotate(288 180 151)">
+    <ellipse class="petal" cx="180" cy="91" rx="31" ry="64"
+      fill="url(#bluePetal)" stroke="#9eafcf" stroke-width="1.5"/>
+  </g>
+</g>
+
+   <circle cx="180" cy="151" r="23" fill="#c3c6cb" stroke="#f1f0eb" stroke-width="2"/>
+   <circle cx="180" cy="151" r="11" fill="#6f7d96"/>
+   <g fill="#e0e3e9">
+    <circle class="particle" cx="61" cy="86" r="3"/><circle class="particle" cx="283" cy="91" r="2.5"/>
+    <circle class="particle" cx="285" cy="189" r="3"/><circle class="particle" cx="78" cy="195" r="2"/>
+    <circle class="particle" cx="122" cy="45" r="2"/><circle class="particle" cx="240" cy="44" r="2"/>
+    <path class="particle" d="M55 145 l4 8 8 4-8 4-4 8-4-8-8-4 8-4Z"/>
+    <path class="particle" d="M298 130 l3 6 6 3-6 3-3 6-3-6-6-3 6-3Z"/>
+   </g>
+  </svg>
+  <p class="small-note" id="flowerHint">Sentuh bunganya biar mekar</p>
+  <button class="btn" id="flowerNext" disabled>Lanjutkan</button>
+  <p class="small-note">Pencet bintang kecil disamping teks ini coba <span class="secret" id="petalSecret">✧</span></p>
+ </div>
+</section>
+
+<!-- HALAMAN 4: SURAT -->
+<section class="page" id="letterPage">
+ <div class="frame">
+  <p class="eyebrow">A note from me</p>
+  <h2>A Little <span class="accent">Letter</span></h2>
+  <p id="letterIntro">Sampai juga dibagian surat, baca pelan-pelan yaaa</p>
+  <svg class="envelope illustration" id="envelope" viewBox="0 0 320 220" role="button" tabindex="0" aria-label="Buka amplop">
+   <rect x="28" y="42" width="264" height="150" rx="8" fill="#d7d8d8" stroke="#f1f0eb" stroke-width="2"/>
+   <path d="M30 49 L160 145 L290 49" fill="#bfc3c9" stroke="#7b8491" stroke-width="2"/>
+   <path d="M30 188 L123 111 M290 188 L197 111" fill="none" stroke="#8b929d" stroke-width="2"/>
+   <circle cx="160" cy="137" r="23" fill="#303b50" stroke="#e2e4e8" stroke-width="2"/>
+   <text x="160" y="144" text-anchor="middle" font-size="20" fill="#e9e9e7">✦</text>
+  </svg>
+  <button class="btn" id="openLetter">Buka surat</button>
+  <div class="letter hidden" id="letterText">
+   <p>Hai, <strong id="letterName">[Nama Panggilan]</strong>.</p>
+   <p>Selamat ulang tahun Anasyaaaaa😁 Semoga di usia yang sekarang, kamu selalu diberi kesehatan, kebahagiaan, dan banyakkkk banget alasan yang bikin kamu tersenyum yaa.</p>
+   <p>Semoga semua hal yang lagi kamu usahakan saat ini bisa tercapai yaa. Kalau nanti ada hari yang terasa berat, semoga kamu tetap punya kekuatan dan alasan untuk tetap bertahan dan ga lupa buat tetap tersenyum setelahnya.</p>
+   <p>Terima kasih karena udah jadi diri kamu sendiri. Aku cuma mau hari spesialmu terasa sedikit istimewa dari ucapan sederhana yang aku buat ini.</p>
+   <p>Have a lovely birthday. Jangan lupa bahagia, yaaa. ✧</p>
+   <p style="text-align:right">— Alif</p>
+  </div>
+  <p class="small-note">Coba pencet titik di samping teks ini <span class="secret" id="letterSecret">·</span></p>
+  <button class="btn hidden" id="letterNext">Lanjutkan</button>
+ </div>
+</section>
+
+<!-- HALAMAN 5: PENUTUP -->
+<section class="page" id="finalPage">
+ <div class="frame">
+  <span class="corner c1">✧</span><span class="corner c2">☾</span><span class="corner c3">❋</span><span class="corner c4">✦</span>
+  <p class="eyebrow">One last little wish</p>
+  <div class="final-stars">✦ · ☾ · ✧</div>
+  <h2>Keep <span class="accent">Shining</span></h2>
+  <p>Semoga di hari-hari kedepannya membawa cerita-cerita baik, kesempatan baru, dan kebahagiaan yang selalu bikin kamu tersenyum</p>
+  <p>Dunia punya banyak hal indah yang masih menunggumu</p>
+  <p class="accent">Happy Birthday, once again ♡</p>
+  <p class="small-note">Makasih udah buka dan baca kartu ucapan ini😁</p>
+  <button class="btn" id="restartBtn">Liat lagi dari awal</button>
+  <p class="small-note" style="margin-top:22px"> <span class="secret" id="finalSecret">✧</span></p>
+ </div>
+</section>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* =========================
+   BAGIAN YANG BISA KAMU UBAH
+   ========================= */
+const CONFIG = {
+  recipient: "Anasya", // Ganti dengan nama panggilan dia
+  pin: "201104",                 // DDMMYY: 20 November 2004
+};
+
+/* Isi titik-titik kecil sebagai dekorasi di latar */
+const sparkleLayer = document.getElementById("sparkles");
+for(let i=0;i<42;i++){
+  const s=document.createElement("i"); s.className="spark";
+  s.style.left=(Math.random()*100)+"%"; s.style.top=(Math.random()*100)+"%";
+  s.style.animationDelay=(Math.random()*4)+"s";
+  s.style.animationDuration=(2+Math.random()*3)+"s";
+  sparkleLayer.appendChild(s);
+}
+document.getElementById("recipientName").textContent=CONFIG.recipient;
+document.getElementById("letterName").textContent=CONFIG.recipient;
+
+const pages=["openingPage","birthdayPage","flowerPage","letterPage","finalPage"];
+const progress=document.getElementById("progress");
+const dots=[...progress.querySelectorAll("span")];
+let currentPage=0, micStream=null, audioContext=null, analyser=null, micActive=false;
+let easterEggs=new Set();
+
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  const index=pages.indexOf(id);
+  currentPage=index;
+  progress.classList.toggle("hidden",index<0);
+  dots.forEach((d,i)=>d.classList.toggle("on",i===index));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function toast(message){
+  const el=document.getElementById("toast");el.textContent=message;el.classList.add("show");
+  clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),7000);
+}
+function nextPage(id){showPage(id)}
+document.getElementById("pinBtn").addEventListener("click",()=>{
+  const value=document.getElementById("pinInput").value.trim();
+  if(value===CONFIG.pin){document.getElementById("pinError").textContent="";showPage("openingPage");}
+  else document.getElementById("pinError").textContent="PIN belum tepat. Coba cek tanggal ulang tahunnya, yaaa";
+});
+document.getElementById("pinInput").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("pinBtn").click();});
+document.querySelectorAll("[data-next]").forEach(b=>b.addEventListener("click",()=>nextPage(b.dataset.next)));
+
+/* Musik: browser baru mengizinkan audio setelah interaksi pengguna */
+const music=document.getElementById("bgMusic"),musicBtn=document.getElementById("musicBtn");
+musicBtn.addEventListener("click",async()=>{
+  if(music.paused){
+    try{await music.play();musicBtn.textContent="Jeda musik";}
+    catch(e){toast("Tambahkan file jazz-saxophone.mp3 di folder website terlebih dahulu.");}
+  }else{music.pause();musicBtn.textContent="Putar musik";}
+});
+
+/* Tiup lilin dengan mikrofon. Ambang suara dapat disesuaikan jika terlalu sensitif. */
+async function startMic(){
+  const status=document.getElementById("micStatus"),btn=document.getElementById("micBtn");
+  if(!navigator.mediaDevices?.getUserMedia){
+    status.textContent="Mikrofon tidak tersedia di browser ini. Coba buka website melalui HTTPS (misalnya GitHub Pages) dan gunakan browser terbaru.";
+    document.getElementById("retryMic").classList.remove("hidden");return;
+  }
+  try{
+    micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    audioContext=new (window.AudioContext||window.webkitAudioContext)();
+    const source=audioContext.createMediaStreamSource(micStream);
+    analyser=audioContext.createAnalyser();analyser.fftSize=1024;source.connect(analyser);
+    const data=new Uint8Array(analyser.fftSize);
+    micActive=true;btn.disabled=true;btn.textContent="Mikrofon aktif";
+    status.textContent="Coba tiup hp nya";
+    let loudCount=0;
+    function listen(){
+      if(!micActive)return;
+      analyser.getByteTimeDomainData(data);
+      let sum=0;for(let i=0;i<data.length;i++){const v=(data[i]-128)/128;sum+=v*v;}
+      const volume=Math.sqrt(sum/data.length);
+      if(volume>0.19)loudCount++;else loudCount=Math.max(0,loudCount-1);
+      if(loudCount>=3){blowOut();return;}
+      requestAnimationFrame(listen);
+    }
+    listen();
+  }catch(err){
+    status.textContent="Akses mikrofonnya belum diizikan cuy. Coba cek izin mikrofon browser, kalo udah tekan Coba lagi.";
+    btn.disabled=false;document.getElementById("retryMic").classList.remove("hidden");
+  }
+}
+function stopMic(){
+  micActive=false;if(micStream)micStream.getTracks().forEach(t=>t.stop());
+  if(audioContext){audioContext.close().catch(()=>{});audioContext=null;}
+}
+function blowOut(){
+  stopMic();document.getElementById("flame").classList.add("out");
+  document.getElementById("micStatus").textContent="Naiseeeee apinya udah padam, semoga harapannya jadi kenyataan yaaa ✨";
+  document.getElementById("micBtn").classList.add("hidden");
+  document.getElementById("retryMic").classList.add("hidden");
+  const b=document.createElement("button");b.className="btn";b.textContent="Lanjut";b.style.marginTop="12px";
+  b.addEventListener("click",()=>showPage("flowerPage"));
+  document.querySelector("#birthdayPage .btn-row").appendChild(b);
+}
+document.getElementById("micBtn").addEventListener("click",startMic);
+document.getElementById("retryMic").addEventListener("click",startMic);
+
+/* Bunga mekar saat disentuh */
+function bloom(){
+  const flower=document.getElementById("flower");
+  if(flower.classList.contains("bloomed"))return;
+  flower.classList.add("bloomed");
+  document.getElementById("flowerHint").textContent="Semoga hal baik terus bermekaran di hidupmu ✧";
+  document.getElementById("flowerNext").disabled=false;
+}
+document.getElementById("flower").addEventListener("click",bloom);
+document.getElementById("flower").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();bloom();}});
+document.getElementById("flowerNext").addEventListener("click",()=>showPage("letterPage"));
+
+/* Surat terbuka saat tombol disentuh */
+document.getElementById("openLetter").addEventListener("click",()=>{
+  document.getElementById("envelope").classList.add("hidden");
+  document.getElementById("openLetter").classList.add("hidden");
+  document.getElementById("letterIntro").classList.add("hidden");
+  document.getElementById("letterText").classList.remove("hidden");
+  document.getElementById("letterNext").classList.remove("hidden");
+});
+document.getElementById("letterNext").addEventListener("click",()=>showPage("finalPage"));
+
+/* Easter eggs */
+function secret(id,message){
+  document.getElementById(id).addEventListener("click",()=>{if(easterEggs.has(id))return;easterEggs.add(id);toast(message);});
+}
+secret("starSecret","Rahasia kecil #1: Semoga kamu senyum terus setiap hari yaa, senyuman kamu manis soalnya hehe ✧");
+secret("petalSecret","Rahasia kecil #2: Terus jadi perempuan yang ceria di mana pun dan kapan pun");
+secret("letterSecret","Rahasia kecil #3: Jangan pernah ragu sama diri kamu sendiri!!!");
+document.getElementById("finalSecret").addEventListener("click",()=>{
+  if(easterEggs.size>=3)toast("Semua easter egg nya udah ditemuin, semoga tahun ini jadi salah satu tahun terbaikmu ♡");
+  else toast("Kayaknya masih ada easter egg yang belum ketemu deh");
+});
+document.getElementById("restartBtn").addEventListener("click",()=>{
+  stopMic();document.getElementById("flame").classList.remove("out");
+  document.getElementById("micBtn").classList.remove("hidden");document.getElementById("micBtn").disabled=false;
+  document.getElementById("micBtn").textContent="Aktifkan mikrofon";
+  document.getElementById("micStatus").textContent="Akses mikrofonnya aktifin dulu yaa, abis itu tiup pelan ke arah mikrofon buat padamin lilin";
+  document.getElementById("flower").classList.remove("bloomed");
+  document.getElementById("flowerNext").disabled=true;
+  document.getElementById("flowerHint").textContent="Sentuh bunganya biar mekar";
+  document.getElementById("letterText").classList.add("hidden");
+  document.getElementById("envelope").classList.remove("hidden");
+  document.getElementById("openLetter").classList.remove("hidden");
+  document.getElementById("letterIntro").classList.remove("hidden");
+  document.getElementById("letterNext").classList.add("hidden");
+  const extra=document.querySelector("#birthdayPage .btn-row button:last-child");
+  if(extra && extra.id!=="retryMic" && extra.id!=="micBtn")extra.remove();
+  showPage("openingPage");
+});
+</script>
+</body>
+</html>
